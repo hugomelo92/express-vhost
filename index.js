@@ -24,6 +24,6 @@ mongoose
     console.log(error);
   });
 
-app.use(vhost('node.local', app));
+app.use(vhost('mongode.local', app));
 
 app.listen(9000, () => console.log('Server ativo na porta 9000'));
