@@ -1,28 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
+const mongo = require('./db/mongo');
 const vhost = require('vhost');
 
 const app = express();
 
 app.use(bodyParser.json());
 
-// Adicionando arquivo de rota no endpoint /carros
-const carros = require('./routes/carros');
+//lendo rotas
+var routes = require("path").join(__dirname+"/routes");
+require("fs").readdirSync(routes).forEach(function(file) {
+    app.use('/api', require("./routes/" + file));
+});
 
-app.use('/api/carros', carros);
-
-mongoose
-  .connect('mongodb://db:27017/crud-node-mongo-docker', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(result => {
-    console.log('MongoDB Conectado');
-  })
-  .catch(error => {
-    console.log(error);
-  });
+mongo.connect();
 
 app.use(vhost('mongode.local', app));
 

@@ -1,56 +1,31 @@
 const express = require('express');
 const router = express.Router();
 
-const Carro = require('../models/Carro');
+const CarrosController = require('../controllers/CarrosController');
 
-router.get('/', (req, res) => {
-  Carro.find()
-    .then(carros => {
-      res.json(carros);
-    })
-    .catch(error => res.status(500).json(error));
+router.get('/carros/', (req, res) => {
+  const instance = new CarrosController();
+  instance.get(req, res);
 });
 
-router.get('/:id', (req, res) => {
-  Carro.findOne({ _id: req.params.id })
-    .then(carro => {
-      res.json(carro);
-    })
-    .catch(error => res.status(500).json(error));
+router.get('/carros/:id', (req, res) => {
+  const instance = new CarrosController();
+  instance.find(req, res);
 });
 
-router.post('/', (req, res) => {
-  const novoCarro = new Carro({
-    marca: req.body.marca,
-    modelo: req.body.modelo
-  });
-
-  novoCarro
-    .save()
-    .then(carro => {
-      res.json(carro);
-    })
-    .catch(error => {
-      res.status(500).json(error);
-    });
+router.post('/carros/', (req, res) => {
+  const instance = new CarrosController();
+  instance.store(req, res);
 });
 
-router.put('/:id', (req, res) => {
-  const novosDados = { marca: req.body.marca, modelo: req.body.modelo };
-
-  Carro.findOneAndUpdate({ _id: req.params.id }, novosDados, { new: true })
-    .then(carro => {
-      res.json(carro);
-    })
-    .catch(error => res.status(500).json(error));
+router.put('/carros/:id', (req, res) => {
+  const instance = new CarrosController();
+  instance.update(req, res);
 });
 
-router.delete('/:id', (req, res) => {
-  Carro.findOneAndDelete({ _id: req.params.id })
-    .then(carro => {
-      res.json(carro);
-    })
-    .catch(error => res.status(500).json(error));
+router.delete('/carros/:id', (req, res) => {
+  const instance = new CarrosController();
+  instance.destroy(req, res);
 });
 
 module.exports = router;
