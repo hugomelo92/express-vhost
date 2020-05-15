@@ -1,20 +1,24 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongo = require('./db/mongo');
-const vhost = require('vhost');
+var express = require('express');
+var vhost = require('vhost');
+const fs = require('fs');
 
-const app = express();
+var appWithVhost = express();
 
-app.use(bodyParser.json());
+try {
+  const vhosts = JSON.parse(fs.readFileSync('vhosts.json', 'utf-8'));
 
-//lendo rotas
-var routes = require("path").join(__dirname+"/routes");
-require("fs").readdirSync(routes).forEach(function(file) {
-    app.use('/api', require("./routes/" + file));
-});
+  vhosts.map(function(line){
+      const mongode = require(`./apps/${line.name}`);
+      appWithVhost.use(vhost(`${line.host}`, mongode));
+  })
+  
+} catch (err) {
+  console.error(err)
+}
 
-mongo.connect();
 
-app.use(vhost('mongode.local', app));
-
-app.listen(9000, () => console.log('Server ativo na porta 9000'));
+/* istanbul ignore next */
+if (!module.parent) {
+  appWithVhost.listen(9000);
+  console.log('Express started on port 9000');
+}
